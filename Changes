@@ -1,0 +1,10 @@
+Revision history for Perl extension Urlader
+
+0.2   Sun Jan  8 10:12:00 CET 2012
+        - initial release, was successfully used for one deliantra
+          release.
+
+0.01  Sat Dec 31 11:15:29 CET 2011
+	- original version; cloned from Convert::Scalar and scavenging
+          earlier "urlader" work.
+
