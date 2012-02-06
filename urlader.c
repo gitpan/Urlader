@@ -1,3 +1,39 @@
+/*
+ * Copyright (c) 2012 Marc Alexander Lehmann <schmorp@schmorp.de>
+ * 
+ * Redistribution and use in source and binary forms, with or without modifica-
+ * tion, are permitted provided that the following conditions are met:
+ * 
+ *   1.  Redistributions of source code must retain the above copyright notice,
+ *       this list of conditions and the following disclaimer.
+ * 
+ *   2.  Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MER-
+ * CHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO
+ * EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPE-
+ * CIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+ * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTH-
+ * ERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * the GNU General Public License ("GPL") version 2 or any later version,
+ * in which case the provisions of the GPL are applicable instead of
+ * the above. If you wish to allow the use of your version of this file
+ * only under the terms of the GPL and not to allow others to use your
+ * version of this file under the BSD license, indicate your decision
+ * by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL. If you do not delete the
+ * provisions above, a recipient may use your version of this file under
+ * either the BSD or the GPL.
+ */
+
 #include "urlib.h"
 #include "urlib.c"
 
@@ -352,14 +388,58 @@ WinMain (HINSTANCE hI, HINSTANCE hP, LPSTR argv, int command_show)
 int
 main (int argc, char *argv[])
 {
-  u_setenv ("URLADER_EXEPATH", argv [0]);
-
-  pack_handle = u_open (argv [0]);
-  if (!u_valid (pack_handle))
-    u_fatal ("unable to open executable pack");
-
   if (!getcwd (currdir, sizeof (currdir)))
     strcpy (currdir, ".");
+
+  {
+    const char *exe_path = 0;
+
+    if (strchr (argv [0], '/'))
+      exe_path = argv [0];
+    else
+      {
+        const char *p, *path = getenv ("PATH");
+
+        if (!path)
+          u_fatal ("unable to find executable, try running with full path.");
+
+        for (p = path; ; )
+          {
+            const char *e = p;
+            int l;
+
+            while (*e && *e != ':')
+              ++e;
+
+            l = e - p;
+            memcpy (tmppath, p, l);
+
+            if (!l)
+              tmppath [l++] = '.';
+
+            tmppath [l++] = '/';
+
+            strcpy (tmppath + l, argv [0]);
+
+            if (!access (tmppath, X_OK))
+              break;
+
+            p = e;
+            if (!*p)
+              u_fatal ("unable to find executable, try running with full path.");
+
+            ++p;
+          }
+
+        exe_path = tmppath;
+      }
+
+    pack_handle = u_open (exe_path);
+    if (!u_valid (pack_handle))
+      u_fatal ("unable to open executable for reading - permissions problem?");
+
+    u_setenv ("URLADER_EXEPATH", exe_path);
+  }
 
 #if 0
   /* intersperse hostname, for whatever reason */

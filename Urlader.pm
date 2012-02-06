@@ -198,7 +198,7 @@ package Urlader;
 use common::sense;
 
 BEGIN {
-   our $VERSION = '0.2';
+   our $VERSION = '1.0';
 
    use XSLoader;
    XSLoader::load __PACKAGE__, $VERSION;
@@ -348,7 +348,58 @@ These can be found at
 L<http://cvs.schmorp.de/deliantra/Deliantra-Client/util/>, but looking at
 them can lead to premature blindless.
 
+=item Shared Libraries
+
+It is often desirable to package shared libraries - for example the
+Deliantra client packages SD>, Berkely DB, Pango and amny other libraries
+that are unlikely to be available on the target system.
+
+This usually requires some fiddling (see below), and additionally some
+environment variables to be set.
+
+For example, on ELF systems you usually want F<LD_LIBRARY_PATH=.> and on
+OS X, you want F<DYLD_LIBRARY_PATH=.> (these are effectively the default
+on windows).
+
+These can most easily be specified when building the packfile:
+
+   urlader-util ... LD_LIBRARY_PATH=. ./perl run
+
+=item Portability: RPATH
+
+Often F<perl> is linked against a shared F<libperl.so> - and might be so
+using an rpath. Perl extensikns likewise might use an rpath, which means
+the binary will mostly ignore LD_LIBRARY_PATH, which leads to trouble.
+
+There is an utility called F<chrpath>, whose F<-d> option can remove the
+rpath from binaries, shared library and shared objects.
+
+=item Portability: OS X DLL HELL
+
+OS X has the most severe form of DLL hell I have seen - if you link
+against system libraries, which is practically unavoidable, you get
+libraries of well-known names (e.g. libjpeg) that have nothing to do with
+what you normally expect libjpeg to be, and there is no way to get your
+version of libjpeg into your program.
+
+Moreover, even if apple ships well-known libraries (e.g. libiconv), they
+often ship patched versions which have a different ABI or even API then
+the real releases.
+
+The only way aorund this I found was to change all library names
+in my releases (libjpeg.dylib becomes libdeliantra-jpeg.dylin and
+so on), by patching the paths in the share dlibraries and shared
+objects. F<install-name-tool> (with F<-id> and F<-change>) works in many
+cases, but often paths are embedded indirectly, so you might have to use a
+I<dirty> string replacement.
+
 =back
+
+=head1 SECURITY CONSIDERATIONS
+
+The urlader executable itself does not support setuig/setgid operation, or
+running with elevated privileges - it does no input sanitisation, and is
+trivially exploitable.
 
 =head1 AUTHOR
 

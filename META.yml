@@ -20,4 +20,4 @@ no_index:
 requires:
   Win32::Exe: 0.17
   common::sense: 0
-version: 0.2
+version: 1.0

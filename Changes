@@ -1,5 +1,12 @@
 Revision history for Perl extension Urlader
 
+1.0  Mon Feb  6 23:08:58 CET 2012
+        - warn about set*id or privileged operation.
+        - properly do PATH search on unix to find executable (*blush*).
+	- more tips and tricks.
+        - use FILE_SHARE_DELETE when opening override/executable and lockfiles
+          on windows.
+
 0.2   Sun Jan  8 10:12:00 CET 2012
         - initial release, was successfully used for one deliantra
           release.
