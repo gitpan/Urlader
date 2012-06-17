@@ -36,7 +36,7 @@ my $out = *STDOUT;
 
 if (length $OUTPUT) {
    undef $out;
-   open $out, ">:perlio", $OUTPUT
+   open $out, ">:raw:perlio", $OUTPUT
       or die "$OUTPUT: $!";
 }
 
@@ -51,7 +51,7 @@ if (length $OUTPUT) {
 my $urlader_md5 = "\x00" x 16;
 
 if (length $URLADER) {
-   open my $fh, "<:perlio", $URLADER
+   open my $fh, "<:raw:perlio", $URLADER
       or die "$URLADER: $!";
    my $urlader = do { local $/; <$fh> };
 
@@ -127,7 +127,7 @@ sub scandir {
          $datasize += $len;
          $max_uncomp = $len if $max_uncomp < $len;
 
-         open my $fh2, "<", "$path/$file"
+         open my $fh2, "<:raw:perlio", "$path/$file"
             or die "$path/$file: $!";
 
          $len == sysread $fh2, my $data, $len

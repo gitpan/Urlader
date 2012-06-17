@@ -198,7 +198,7 @@ package Urlader;
 use common::sense;
 
 BEGIN {
-   our $VERSION = '1.0';
+   our $VERSION = '1.01';
 
    use XSLoader;
    XSLoader::load __PACKAGE__, $VERSION;
@@ -256,14 +256,14 @@ acquire an exclusive lock, otherwise the lock will be shared. If C<$wait>
 is true, then it will wait until the lock can be acquired, otherwise it
 only attempts to acquire it and returns immediately if it can't.
 
-If successful it returns a lock object - the lock will be given up
-when the lock object is destroyed.
+If successful it returns a lock object - the lock will be given up when
+the lock object is destroyed or when the process exits (even on a crash)
+and has a good chance of working on network drives as well.
 
 If the lock could not be acquired, C<undef> is returned.
 
-This function will probably go awway in the future, but is provided to
-assist applications that want to clean up old versions, see "TIPS AND
-TRICKS", below.
+This function is provided to assist applications that want to clean up old
+versions, see "TIPS AND TRICKS", below.
 
 =cut
 
@@ -277,7 +277,7 @@ TRICKS", below.
 
 =item Gathering files
 
-Gathering all the files needed for distribution cna be a big
+Gathering all the files needed for distribution can be a big
 problem. Right now, Urlader does not assist you in this task in any way,
 however, just like perl source stripping, it is planned to unbundle the
 relevant technology from B<staticperl> (L<http://staticperl.plan9.de>) for

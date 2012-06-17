@@ -94,7 +94,7 @@ lock (SV *path, SV *excl, SV *dowait)
 
         RETVAL = &PL_sv_undef;
         if (u_valid (h))
-          RETVAL = sv_setref_iv (sv_newmortal (), "Urlader::lock", (IV)h);
+          RETVAL = sv_setref_iv (NEWSV (0, 0), "Urlader::lock", (IV)h);
 }
 	OUTPUT:
         RETVAL

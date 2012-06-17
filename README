@@ -182,17 +182,17 @@ FUNCTIONS AND VARIABLES IN THIS MODULE
         immediately if it can't.
 
         If successful it returns a lock object - the lock will be given up
-        when the lock object is destroyed.
+        when the lock object is destroyed or when the process exits (even on
+        a crash) and has a good chance of working on network drives as well.
 
         If the lock could not be acquired, "undef" is returned.
 
-        This function will probably go awway in the future, but is provided
-        to assist applications that want to clean up old versions, see "TIPS
-        AND TRICKS", below.
+        This function is provided to assist applications that want to clean
+        up old versions, see "TIPS AND TRICKS", below.
 
 TIPS AND TRICKS
     Gathering files
-        Gathering all the files needed for distribution cna be a big
+        Gathering all the files needed for distribution can be a big
         problem. Right now, Urlader does not assist you in this task in any
         way, however, just like perl source stripping, it is planned to
         unbundle the relevant technology from staticperl
